@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -81,16 +83,16 @@ class CompanyApiTest {
 
     @Test
     void should_create_employee() throws Exception {
-        Company company = companyJpaRepository.save(getCompany1());
+        Company newCompany = companyJpaRepository.save(getCompany1());
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String companyRequest = objectMapper.writeValueAsString(company);
+        String companyRequest = objectMapper.writeValueAsString(newCompany);
         mockMvc.perform(post("/companies")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(companyRequest))
                 .andExpect(MockMvcResultMatchers.status().is(201))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(company.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(company.getName()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(newCompany.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(newCompany.getName()));
     }
 
     @Test
@@ -174,8 +176,10 @@ class CompanyApiTest {
 
 
     private static Company getCompany1() {
+        List<Employee> employees = new ArrayList<>();
         Company company = new Company();
         company.setName("ABC");
+        company.setEmployees(employees);
         return company;
     }
 
