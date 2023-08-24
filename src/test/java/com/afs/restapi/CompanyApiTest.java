@@ -108,38 +108,36 @@ class CompanyApiTest {
 
     @Test
     void should_find_companies_by_page() throws Exception {
-        Company company1 = getCompany1();
-        Company company2 = getCompany2();
-        Company company3 = getCompany3();
-        inMemoryCompanyRepository.insert(company1);
-        inMemoryCompanyRepository.insert(company2);
-        inMemoryCompanyRepository.insert(company3);
+        Company company1 = companyJpaRepository.save(getCompany1());
+        Company company2 = companyJpaRepository.save(getCompany1());
+        Company company3 = companyJpaRepository.save(getCompany1());
 
         mockMvc.perform(get("/companies")
-                        .param("pageNumber", "1")
+                        .param("pageNumber", "0")
                         .param("pageSize", "2"))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(company1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(company1.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(2L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(company2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value(company2.getName()))
         ;
     }
 
     @Test
     void should_find_company_by_id() throws Exception {
-        Company company = getCompany1();
-        inMemoryCompanyRepository.insert(company);
-        Employee employee = getEmployee(company);
-        inMemoryEmployeeRepository.insert(employee);
+        Company company = companyJpaRepository.save(getCompany1());
+        Employee newEmployee = new Employee(99L,"Peter Gulliver", 69, "Male", 420069);
+        company.getEmployees().add(newEmployee);
+        Employee employee = employeeJpaRepository.save(getEmployee(company));
 
-        mockMvc.perform(get("/companies/{id}", 1))
+
+        mockMvc.perform(get("/companies/{id}", company.getId()))
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(company.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(company.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employees.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employees[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.employees[0].id").value(employee.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employees[0].name").value(employee.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employees[0].age").value(employee.getAge()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employees[0].gender").value(employee.getGender()))

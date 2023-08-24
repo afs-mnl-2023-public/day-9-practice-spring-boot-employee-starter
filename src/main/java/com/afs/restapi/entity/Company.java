@@ -12,7 +12,7 @@ public class Company {
     private Long id;
     private String name;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "companyId")
     private List<Employee> employees;
 
