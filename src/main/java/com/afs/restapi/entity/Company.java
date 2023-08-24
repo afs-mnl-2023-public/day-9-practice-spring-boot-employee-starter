@@ -1,7 +1,5 @@
 package com.afs.restapi.entity;
 
-import com.sun.istack.NotNull;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -22,11 +20,6 @@ public class Company {
     public Company(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-    public Company(Long id, String name, List<Employee> employee) {
-        this.id = id;
-        this.name = name;
-        this.employees = employee;
     }
 
     public Long getId() {

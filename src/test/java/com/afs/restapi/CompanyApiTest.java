@@ -4,8 +4,6 @@ import com.afs.restapi.entity.Company;
 import com.afs.restapi.entity.Employee;
 import com.afs.restapi.repository.CompanyJpaRepository;
 import com.afs.restapi.repository.EmployeeJpaRepository;
-import com.afs.restapi.repository.InMemoryCompanyRepository;
-import com.afs.restapi.repository.InMemoryEmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,20 +30,12 @@ class CompanyApiTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private InMemoryCompanyRepository inMemoryCompanyRepository;
-
-    @Autowired
-    private InMemoryEmployeeRepository inMemoryEmployeeRepository;
-
-    @Autowired
     private CompanyJpaRepository companyJpaRepository;
     @Autowired
     private EmployeeJpaRepository employeeJpaRepository;
 
     @BeforeEach
     void setUp() {
-        inMemoryCompanyRepository.clearAll();
-        inMemoryEmployeeRepository.clearAll();
         companyJpaRepository.deleteAll();
         employeeJpaRepository.deleteAll();
     }
@@ -109,8 +99,7 @@ class CompanyApiTest {
     @Test
     void should_find_companies_by_page() throws Exception {
         Company company1 = companyJpaRepository.save(getCompany1());
-        Company company2 = companyJpaRepository.save(getCompany1());
-        Company company3 = companyJpaRepository.save(getCompany1());
+        Company company2 = companyJpaRepository.save(getCompany2());
 
         mockMvc.perform(get("/companies")
                         .param("pageNumber", "0")
@@ -127,7 +116,7 @@ class CompanyApiTest {
     @Test
     void should_find_company_by_id() throws Exception {
         Company company = companyJpaRepository.save(getCompany1());
-        Employee newEmployee = new Employee(99L,"Peter Gulliver", 69, "Male", 420069);
+        Employee newEmployee = new Employee(99L, "Peter Gulliver", 69, "Male", 420069);
         company.getEmployees().add(newEmployee);
         Employee employee = employeeJpaRepository.save(getEmployee(company));
 
@@ -147,7 +136,7 @@ class CompanyApiTest {
     @Test
     void should_find_employees_by_companies() throws Exception {
         Company company = companyJpaRepository.save(getCompany1());
-        Employee newEmployee = new Employee(99L,"Peter Gulliver", 69, "Male", 420069);
+        Employee newEmployee = new Employee(99L, "Peter Gulliver", 69, "Male", 420069);
         company.getEmployees().add(newEmployee);
         Employee employee = employeeJpaRepository.save(getEmployee(company));
 
@@ -183,12 +172,6 @@ class CompanyApiTest {
     private static Company getCompany2() {
         Company company = new Company();
         company.setName("DEF");
-        return company;
-    }
-
-    private static Company getCompany3() {
-        Company company = new Company();
-        company.setName("XYZ");
         return company;
     }
 }
